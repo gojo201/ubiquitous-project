@@ -25,25 +25,5 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController, auth
             style = MaterialTheme.typography.displayMedium,
             color = MaterialTheme.colorScheme.onBackground
         )
-        Spacer(modifier = Modifier.height(Spacing.large))
-
-        Button(
-            onClick = {navController.navigate(Screen.Profile.route)}
-        ) {
-            Text("Go to my profile")
-        }
-
-        Spacer(modifier = Modifier.height(Spacing.large))
-
-        Button(
-            onClick = {
-                authViewModel.logout()
-                navController.navigate(Screen.Login.route) {
-                    popUpTo(Screen.Home.route) { inclusive = true }
-                }
-            }
-        ) {
-            Text("Logout")
-        }
     }
 }

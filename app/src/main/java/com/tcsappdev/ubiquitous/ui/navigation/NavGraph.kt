@@ -1,6 +1,8 @@
 package com.tcsappdev.ubiquitous.ui.navigation
 
 import android.nfc.tech.IsoDep
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -9,6 +11,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.tcsappdev.ubiquitous.ui.screens.HomeScreen
 import com.tcsappdev.ubiquitous.ui.screens.LoginScreen
@@ -34,43 +37,61 @@ fun NavGraph(
     modifier: Modifier = Modifier,
     isDarkTheme: Boolean,
     onThemeToggle: () -> Unit
-    ){
+    ) {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = viewModel()
     val authState by authViewModel.authState.collectAsState()
 
-    val startDestination = if(authState is AuthState.Authenticated) {
+    val startDestination = if (authState is AuthState.Authenticated) {
         Screen.Home.route
     } else {
         Screen.Welcome.route
     }
 
-    NavHost(
-        navController = navController,
-        startDestination = startDestination,
-        modifier = modifier
-    ){
-        composable(Screen.Welcome.route){
-            WelcomeScreen(modifier, navController)
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val showBottomBar = currentRoute in listOf(
+        Screen.Home.route,
+        Screen.Workout.route,
+        Screen.Profile.route
+    )
+
+    Scaffold(
+        bottomBar = {
+            if (showBottomBar) {
+                BottomNavBar(navController = navController)
+            }
         }
-        composable(Screen.Login.route){
-            LoginScreen(modifier, navController)
-        }
-        composable(Screen.Register.route){
-            RegisterScreen(modifier, navController)
-        }
-        composable(Screen.Home.route){
-            HomeScreen(modifier, navController)
-        }
-        composable(Screen.Profile.route){
-            ProfileScreen(
-                modifier = modifier,
-                navController = navController,
-                isDarkTheme = isDarkTheme,
-                onThemeToggle = onThemeToggle)
-        }
-        composable(Screen.Workout.route){
-            WorkoutScreen(modifier, navController)
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = startDestination,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(Screen.Welcome.route) {
+                WelcomeScreen(modifier, navController)
+            }
+            composable(Screen.Login.route) {
+                LoginScreen(modifier, navController)
+            }
+            composable(Screen.Register.route) {
+                RegisterScreen(modifier, navController)
+            }
+            composable(Screen.Home.route) {
+                HomeScreen(modifier, navController)
+            }
+            composable(Screen.Profile.route) {
+                ProfileScreen(
+                    modifier = modifier,
+                    navController = navController,
+                    isDarkTheme = isDarkTheme,
+                    onThemeToggle = onThemeToggle
+                )
+            }
+            composable(Screen.Workout.route) {
+                WorkoutScreen(modifier, navController)
+            }
         }
     }
 }

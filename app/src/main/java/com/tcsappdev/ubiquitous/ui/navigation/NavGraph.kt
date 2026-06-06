@@ -1,6 +1,8 @@
 package com.tcsappdev.ubiquitous.ui.navigation
 
 import android.nfc.tech.IsoDep
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -69,19 +71,33 @@ fun NavGraph(
             startDestination = startDestination,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Welcome.route) {
+            composable(
+                Screen.Welcome.route,
+                enterTransition = { slideInHorizontally(initialOffsetX = {it}) },
+                exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }) {
                 WelcomeScreen(modifier, navController)
             }
-            composable(Screen.Login.route) {
+            composable(
+                Screen.Login.route,
+                enterTransition = { slideInHorizontally(initialOffsetX = {it}) },
+                exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }) {
                 LoginScreen(modifier, navController)
             }
-            composable(Screen.Register.route) {
+            composable(
+                Screen.Register.route,
+                enterTransition = { slideInHorizontally(initialOffsetX = {it}) },
+                exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }) {
                 RegisterScreen(modifier, navController)
             }
-            composable(Screen.Home.route) {
+            composable(Screen.Home.route,
+                enterTransition = { slideInHorizontally(initialOffsetX = {it}) },
+                exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }) {
                 HomeScreen(modifier, navController)
             }
-            composable(Screen.Profile.route) {
+            composable(
+                Screen.Profile.route,
+                enterTransition = { slideInHorizontally(initialOffsetX = {it}) },
+                exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }) {
                 ProfileScreen(
                     modifier = modifier,
                     navController = navController,
@@ -89,7 +105,9 @@ fun NavGraph(
                     onThemeToggle = onThemeToggle
                 )
             }
-            composable(Screen.Workout.route) {
+            composable(Screen.Workout.route,
+                enterTransition = { slideInHorizontally(initialOffsetX = {it}) },
+                exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }) {
                 WorkoutScreen(modifier, navController)
             }
         }

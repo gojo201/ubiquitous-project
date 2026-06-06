@@ -1,7 +1,11 @@
 package com.tcsappdev.ubiquitous.ui.navigation
 
+import android.nfc.tech.IsoDep
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,6 +16,8 @@ import com.tcsappdev.ubiquitous.ui.screens.ProfileScreen
 import com.tcsappdev.ubiquitous.ui.screens.RegisterScreen
 import com.tcsappdev.ubiquitous.ui.screens.WelcomeScreen
 import com.tcsappdev.ubiquitous.ui.screens.WorkoutScreen
+import com.tcsappdev.ubiquitous.ui.viewmodel.AuthState
+import com.tcsappdev.ubiquitous.ui.viewmodel.AuthViewModel
 
 
 sealed class Screen(val route: String){
@@ -24,12 +30,24 @@ sealed class Screen(val route: String){
 }
 
 @Composable
-fun NavGraph(modifier: Modifier = Modifier){
+fun NavGraph(
+    modifier: Modifier = Modifier,
+    isDarkTheme: Boolean,
+    onThemeToggle: () -> Unit
+    ){
     val navController = rememberNavController()
+    val authViewModel: AuthViewModel = viewModel()
+    val authState by authViewModel.authState.collectAsState()
+
+    val startDestination = if(authState is AuthState.Authenticated) {
+        Screen.Home.route
+    } else {
+        Screen.Welcome.route
+    }
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Welcome.route,
+        startDestination = startDestination,
         modifier = modifier
     ){
         composable(Screen.Welcome.route){
@@ -45,7 +63,11 @@ fun NavGraph(modifier: Modifier = Modifier){
             HomeScreen(modifier, navController)
         }
         composable(Screen.Profile.route){
-            ProfileScreen(modifier, navController)
+            ProfileScreen(
+                modifier = modifier,
+                navController = navController,
+                isDarkTheme = isDarkTheme,
+                onThemeToggle = onThemeToggle)
         }
         composable(Screen.Workout.route){
             WorkoutScreen(modifier, navController)

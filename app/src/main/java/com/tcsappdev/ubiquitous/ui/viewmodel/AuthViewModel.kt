@@ -2,6 +2,7 @@ package com.tcsappdev.ubiquitous.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -52,7 +53,13 @@ class AuthViewModel : ViewModel() {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful){
-                    _authState.value = AuthState.Authenticated
+                    val profileUpdates = UserProfileChangeRequest.Builder()
+                        .setDisplayName(name)
+                        .build()
+                    auth.currentUser?.updateProfile(profileUpdates)
+                        ?.addOnCompleteListener {
+                            _authState.value = AuthState.Authenticated
+                        }
                 } else {
                     _authState.value = AuthState.Error(task.exception?.message?: "Registration failed")
                 }
@@ -63,6 +70,32 @@ class AuthViewModel : ViewModel() {
         auth.signOut()
         _authState.value = AuthState.Unauthenticated
     }
+
+    fun changePassword(currentPassword: String, newPassword: String){
+        val user = auth.currentUser
+        val email = user?.email ?: return
+
+        val credential = com.google.firebase.auth.EmailAuthProvider
+            .getCredential(email, currentPassword)
+
+        user.reauthenticate(credential)
+            .addOnCompleteListener { reAuthTask ->
+                if(reAuthTask.isSuccessful) {
+                    user.updatePassword(newPassword)
+                        .addOnCompleteListener { updateTask ->
+                            if(updateTask.isSuccessful) {
+                                _authState.value = AuthState.Success
+                            } else {
+                                _authState.value = AuthState.Error(
+                                    updateTask.exception?.message ?: "Failed to update password"
+                                )
+                            }
+                        }
+                } else {
+                    _authState.value = AuthState.Error("Current password is incorrect.")
+                }
+            }
+    }
 }
 
 sealed class AuthState{
@@ -70,5 +103,6 @@ sealed class AuthState{
     object Authenticated: AuthState()
     object Unauthenticated: AuthState()
     object Loading: AuthState()
+    object Success: AuthState()
     data class Error(val message: String) : AuthState()
 }

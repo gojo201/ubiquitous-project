@@ -10,6 +10,7 @@ import com.tcsappdev.ubiquitous.ui.screens.HomeScreen
 import com.tcsappdev.ubiquitous.ui.screens.LoginScreen
 import com.tcsappdev.ubiquitous.ui.screens.ProfileScreen
 import com.tcsappdev.ubiquitous.ui.screens.RegisterScreen
+import com.tcsappdev.ubiquitous.ui.screens.WelcomeScreen
 import com.tcsappdev.ubiquitous.ui.screens.WorkoutScreen
 
 
@@ -19,6 +20,7 @@ sealed class Screen(val route: String){
     object Home: Screen("home")
     object Profile: Screen("profile")
     object Workout: Screen("workout")
+    object Welcome: Screen("welcome")
 }
 
 @Composable
@@ -27,9 +29,12 @@ fun NavGraph(modifier: Modifier = Modifier){
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route,
+        startDestination = Screen.Welcome.route,
         modifier = modifier
     ){
+        composable(Screen.Welcome.route){
+            WelcomeScreen(modifier, navController)
+        }
         composable(Screen.Login.route){
             LoginScreen(modifier, navController)
         }

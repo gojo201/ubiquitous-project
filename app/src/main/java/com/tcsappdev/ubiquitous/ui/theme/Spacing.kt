@@ -7,4 +7,6 @@ object Spacing {
     val medium = 16.dp
     val large = 24.dp
     val extraLarge = 32.dp
+
+    val huge  =  64.dp
 }

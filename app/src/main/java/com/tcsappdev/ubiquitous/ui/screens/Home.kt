@@ -23,7 +23,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController, auth
         Text(
             text = "Home Screen",
             style = MaterialTheme.typography.displayMedium,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Spacer(modifier = Modifier.height(Spacing.large))

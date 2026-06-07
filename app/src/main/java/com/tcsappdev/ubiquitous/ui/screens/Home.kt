@@ -32,21 +32,42 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController, auth
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(140.dp)
+                .background(MaterialTheme.colorScheme.primary),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Hello,",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+                Spacer(modifier = Modifier.height(Spacing.small))
+                Text(
+                    text = userName,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(Spacing.extraLarge))
+
         Text(
-            text="Hello,",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
-        Text(
-            text=userName,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onPrimary
+            text = "This Week",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(horizontal = Spacing.large)
         )
 
-        Spacer(modifier = Modifier.height(Spacing.medium))
+        Spacer(modifier = Modifier.height(Spacing.small))
 
         Row(
             modifier = Modifier
@@ -54,12 +75,12 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController, auth
                 .padding(horizontal = Spacing.large),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            StatCard(title = "This week", value="0km")
+            StatCard(title = "Distance", value="0km")
             StatCard(title = "Workouts", value="0")
             StatCard(title = "Calories", value="0kcal")
         }
 
-        Spacer(modifier = Modifier.height(Spacing.large))
+        Spacer(modifier = Modifier.height(Spacing.huge))
 
         Button(
             onClick = {
@@ -84,7 +105,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavController, auth
             )
         }
 
-        Spacer(modifier = Modifier.height(Spacing.large))
+        Spacer(modifier = Modifier.height(Spacing.huge))
         Text(
             text="Recent Activities",
             style = MaterialTheme.typography.titleMedium,
@@ -147,12 +168,14 @@ fun ActivityCard(type: String = "Running") {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(modifier = Modifier.size(32.dp), contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = icon,
                     contentDescription = type,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(28.dp)
                 )
+            }
                 Spacer(modifier = Modifier.height(Spacing.small))
                 Column {
                     Text(

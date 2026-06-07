@@ -8,6 +8,7 @@ data class Workout(
     val type: String = WorkoutType.RUNNING.name,
     val distanceKm: Double = 0.0,
     val durationMinutes: Int = 0,
+    val weatherTemp: Double? = null,
     val routePoints: List<LocationPoint> = emptyList(),
     val timestamp: Long = System.currentTimeMillis()
 )

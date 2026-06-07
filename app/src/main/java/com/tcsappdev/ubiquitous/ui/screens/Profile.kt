@@ -1,6 +1,9 @@
 package com.tcsappdev.ubiquitous.ui.screens
 
 import android.content.Context
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -13,17 +16,7 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +34,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.tcsappdev.ubiquitous.ui.navigation.Screen
 import com.tcsappdev.ubiquitous.ui.theme.Spacing
 import com.tcsappdev.ubiquitous.ui.viewmodel.AuthViewModel
+import android.Manifest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,6 +58,12 @@ fun ProfileScreen(
         mutableStateOf(sharedPreferences.getBoolean("notifications_enabled", true))
     }
     var showPasswordDialog by remember { mutableStateOf(false) }
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        isGranted ->
+        notificationsEnabled = isGranted
+    }
 
     Column(
         modifier = modifier
@@ -168,8 +168,12 @@ fun ProfileScreen(
             Switch(
                 checked = notificationsEnabled,
                 onCheckedChange = { isChecked ->
-                    notificationsEnabled = isChecked
-                    sharedPreferences.edit().putBoolean("notifications_enabled", isChecked).apply()
+                    if (isChecked && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        notificationsEnabled = isChecked
+                        sharedPreferences.edit().putBoolean("notifications_enabled", isChecked).apply()
+                    }
                 }
             )
         }

@@ -17,7 +17,7 @@ class FirebaseNotifs: FirebaseMessagingService() {
         super.onMessageReceived(remoteMessage)
         android.util.Log.d("FCM", "Message received: ${remoteMessage.notification?.title}")
 
-        val title = remoteMessage.notification?.title ?: "InsertAppName"
+        val title = remoteMessage.notification?.title ?: "RunMap"
         val body = remoteMessage.notification?.body ?: "Time to work out!"
 
         sendNotification(title, body)

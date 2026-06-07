@@ -45,13 +45,13 @@ fun WelcomeScreen(modifier: Modifier = Modifier, navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "InsertAppName",
+                    text = "RunMap",
                     style = MaterialTheme.typography.displayLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(Spacing.medium))
                 Text(
-                    text = "Slogan",
+                    text = "Every run, mapped.",
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White
                 )

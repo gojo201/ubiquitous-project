@@ -1,4 +1,4 @@
-# InsertNameHere - Fitness Tracker App
+# RunMap - Fitness Tracker App
 A Strava-like fitness tracking Android app built with Kotlin, Jetpack Compose and Firebase.
 
 ## Team Members

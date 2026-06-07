@@ -3,6 +3,8 @@ package com.tcsappdev.ubiquitous.ui.screens
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,7 +41,10 @@ fun LoginScreen(modifier: Modifier = Modifier, navController: NavController, aut
     }
 
     Column(
-        modifier = modifier.padding(Spacing.large).background(MaterialTheme.colorScheme.background),
+        modifier = modifier
+            .padding(Spacing.large)
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

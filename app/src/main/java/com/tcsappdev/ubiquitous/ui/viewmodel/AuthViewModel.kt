@@ -3,6 +3,7 @@ package com.tcsappdev.ubiquitous.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.tcsappdev.ubiquitous.utils.AuthValidation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -26,8 +27,8 @@ class AuthViewModel : ViewModel() {
     }
 
     fun login(email: String, password: String){
-        if (email.isEmpty() || password.isEmpty()) {
-            _authState.value = AuthState.Error("Please fill in all fields")
+        if (!AuthValidation.isValidEmail(email) || !AuthValidation.isValidPassword(password)) {
+            _authState.value = AuthState.Error("Invalid email or password")
             return
         }
         _authState.value = AuthState.Loading
@@ -44,8 +45,16 @@ class AuthViewModel : ViewModel() {
     }
 
     fun register(name: String, email: String, password: String){
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            _authState.value = AuthState.Error("Please fill in all fields")
+        if (!AuthValidation.isValidName(name)){
+            _authState.value = AuthState.Error("Please enter your name")
+            return
+        }
+        if (!AuthValidation.isValidEmail(email)){
+            _authState.value = AuthState.Error("Please enter a valid email")
+            return
+        }
+        if (!AuthValidation.isValidPassword(password)){
+            _authState.value = AuthState.Error("Password must be at least 6 characters")
             return
         }
         _authState.value = AuthState.Loading

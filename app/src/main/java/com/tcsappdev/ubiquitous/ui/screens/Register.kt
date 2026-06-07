@@ -2,6 +2,8 @@ package com.tcsappdev.ubiquitous.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,7 +35,9 @@ fun RegisterScreen(modifier: Modifier = Modifier, navController: NavController, 
     }
 
     Column(
-        modifier = modifier.padding(Spacing.large),
+        modifier = modifier
+            .padding(Spacing.large)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

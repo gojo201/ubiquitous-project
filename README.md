@@ -35,7 +35,7 @@ A Strava-like fitness tracking Android app built with Kotlin, Jetpack Compose an
 1. Clone the GitHub repository
 2. Open in Android Studio 
 3. Add 'google-services.json' to /app folder (from Firebase)
-4. Add Maps API key to 'local.properties'
+4. Add Maps API key to 'AndroidManifest.xml'
 5. Build and run the app
 
 ## Project Structure

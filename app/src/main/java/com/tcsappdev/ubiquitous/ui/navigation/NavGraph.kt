@@ -19,9 +19,9 @@ import com.tcsappdev.ubiquitous.ui.screens.ProfileScreen
 import com.tcsappdev.ubiquitous.ui.screens.RegisterScreen
 import com.tcsappdev.ubiquitous.ui.screens.WelcomeScreen
 import com.tcsappdev.ubiquitous.ui.screens.WorkoutScreen
+import com.tcsappdev.ubiquitous.ui.screens.WorkoutDetailScreen // EKLENDİ
 import com.tcsappdev.ubiquitous.ui.viewmodel.AuthState
 import com.tcsappdev.ubiquitous.ui.viewmodel.AuthViewModel
-
 
 sealed class Screen(val route: String){
     object Login: Screen("login")
@@ -30,6 +30,10 @@ sealed class Screen(val route: String){
     object Profile: Screen("profile")
     object Workout: Screen("workout")
     object Welcome: Screen("welcome")
+
+    object WorkoutDetail: Screen("workout_detail/{workoutId}") {
+        fun createRoute(workoutId: String) = "workout_detail/$workoutId"
+    }
 }
 
 @Composable
@@ -37,7 +41,7 @@ fun NavGraph(
     modifier: Modifier = Modifier,
     isDarkTheme: Boolean,
     onThemeToggle: () -> Unit
-    ) {
+) {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = viewModel()
     val authState by authViewModel.authState.collectAsState()
@@ -51,6 +55,7 @@ fun NavGraph(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    // Detay sayfası bu listede OLMADIĞI için, eski koşu detayına girince alt menü otomatik gizlenecek!
     val showBottomBar = currentRoute in listOf(
         Screen.Home.route,
         Screen.Workout.route,
@@ -75,23 +80,35 @@ fun NavGraph(
                 exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }) {
                 WelcomeScreen(modifier, navController)
             }
+
             composable(
                 Screen.Login.route,
                 enterTransition = { slideInHorizontally(initialOffsetX = {it}) },
                 exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }) {
                 LoginScreen(modifier, navController)
             }
+
             composable(
                 Screen.Register.route,
                 enterTransition = { slideInHorizontally(initialOffsetX = {it}) },
                 exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }) {
                 RegisterScreen(modifier, navController)
             }
-            composable(Screen.Home.route,
+
+            composable(
+                Screen.Home.route,
                 enterTransition = { slideInHorizontally(initialOffsetX = {it}) },
                 exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }) {
-                HomeScreen(modifier, navController)
+                HomeScreen(
+                    modifier = modifier,
+                    navController = navController,
+                    onNavigateToDetail = { workoutId ->
+                        // Geçmişteki antrenmana tıklandığında ID'sini alıp detay sayfasına fırlatıyor
+                        navController.navigate(Screen.WorkoutDetail.createRoute(workoutId))
+                    }
+                )
             }
+
             composable(
                 Screen.Profile.route,
                 enterTransition = { slideInHorizontally(initialOffsetX = {it}) },
@@ -103,10 +120,34 @@ fun NavGraph(
                     onThemeToggle = onThemeToggle
                 )
             }
-            composable(Screen.Workout.route,
+
+            composable(
+                Screen.Workout.route,
                 enterTransition = { slideInHorizontally(initialOffsetX = {it}) },
                 exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }) {
-                WorkoutScreen(modifier, navController)
+                WorkoutScreen(
+                    modifier = modifier,
+                    onWorkoutFinished = {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Workout.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
+            // 🔥 YENİ: Firebase'den Çekilen Eski Antrenman Detay Sayfası
+            composable(
+                route = Screen.WorkoutDetail.route,
+                enterTransition = { slideInHorizontally(initialOffsetX = {it}) },
+                exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }
+            ) { backStackEntry ->
+                // Rotadan gelen ID'yi yakalıyoruz
+                val workoutId = backStackEntry.arguments?.getString("workoutId") ?: ""
+
+                WorkoutDetailScreen(
+                    workoutId = workoutId,
+                    onBackClick = { navController.popBackStack() } // Geri tuşuna basınca Ana Ekrana (Home) döner
+                )
             }
         }
     }

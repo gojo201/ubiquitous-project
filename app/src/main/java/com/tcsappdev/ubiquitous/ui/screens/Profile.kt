@@ -1,5 +1,6 @@
 package com.tcsappdev.ubiquitous.ui.screens
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -30,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -48,10 +51,18 @@ fun ProfileScreen(
     onThemeToggle: () -> Unit,
     authViewModel: AuthViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+    val sharedPreferences = remember {
+        context.getSharedPreferences("ubiquitous_settings", Context.MODE_PRIVATE)
+    }
+
     val currentUser = FirebaseAuth.getInstance().currentUser
     val userName = currentUser?.displayName ?: "No name"
     val userEmail = currentUser?.email ?: "No email"
-    var notificationsEnabled by remember { mutableStateOf(true) }
+
+    var notificationsEnabled by remember {
+        mutableStateOf(sharedPreferences.getBoolean("notifications_enabled", true))
+    }
     var showPasswordDialog by remember { mutableStateOf(false) }
 
     Column(
@@ -130,7 +141,7 @@ fun ProfileScreen(
             }
             Switch(
                 checked = isDarkTheme,
-                onCheckedChange = {onThemeToggle()}
+                onCheckedChange = { onThemeToggle() }
             )
         }
 
@@ -143,7 +154,7 @@ fun ProfileScreen(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Default.DarkMode,
+                    imageVector = Icons.Default.Notifications,
                     contentDescription = "Notifications",
                     tint = MaterialTheme.colorScheme.onBackground
                 )
@@ -156,7 +167,10 @@ fun ProfileScreen(
             }
             Switch(
                 checked = notificationsEnabled,
-                onCheckedChange = {notificationsEnabled = it}
+                onCheckedChange = { isChecked ->
+                    notificationsEnabled = isChecked
+                    sharedPreferences.edit().putBoolean("notifications_enabled", isChecked).apply()
+                }
             )
         }
 
@@ -171,7 +185,7 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(Spacing.small))
 
         OutlinedButton(
-            onClick = {showPasswordDialog = true},
+            onClick = { showPasswordDialog = true },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = Spacing.large)
@@ -191,7 +205,7 @@ fun ProfileScreen(
             onClick = {
                 authViewModel.logout()
                 navController.navigate(Screen.Welcome.route) {
-                    popUpTo(0) {inclusive = true}
+                    popUpTo(0) { inclusive = true }
                 }
             },
             modifier = Modifier
@@ -217,30 +231,30 @@ fun ProfileScreen(
         var confirmPassword by remember { mutableStateOf("") }
 
         AlertDialog(
-            onDismissRequest = {showPasswordDialog = false},
-            title = {Text("Change Password")},
+            onDismissRequest = { showPasswordDialog = false },
+            title = { Text("Change Password") },
             text = {
                 Column {
                     OutlinedTextField(
                         value = currentPassword,
-                        onValueChange = {currentPassword = it},
-                        label = {Text("Current Password")},
+                        onValueChange = { currentPassword = it },
+                        label = { Text("Current Password") },
                         visualTransformation = PasswordVisualTransformation(),
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(Spacing.small))
                     OutlinedTextField(
                         value = newPassword,
-                        onValueChange = {newPassword = it},
-                        label = {Text("New Password")},
+                        onValueChange = { newPassword = it },
+                        label = { Text("New Password") },
                         visualTransformation = PasswordVisualTransformation(),
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(Spacing.small))
                     OutlinedTextField(
                         value = confirmPassword,
-                        onValueChange = {confirmPassword = it},
-                        label = {Text("Confirm Password")},
+                        onValueChange = { confirmPassword = it },
+                        label = { Text("Confirm Password") },
                         visualTransformation = PasswordVisualTransformation(),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -259,7 +273,7 @@ fun ProfileScreen(
                 }
             },
             dismissButton = {
-                TextButton(onClick ={showPasswordDialog=false}) {
+                TextButton(onClick = { showPasswordDialog = false }) {
                     Text("Cancel")
                 }
             }

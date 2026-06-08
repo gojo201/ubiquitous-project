@@ -7,7 +7,7 @@ A Strava-like fitness tracking Android app built with Kotlin, Jetpack Compose an
 
 ## Features
 - User Authentication(register, login, logout)
-- GPS workout tracking (running, walking, cycling)
+- GPS workout tracking
 - Live map route display
 - Weather information 
 - Workout history and statistics
